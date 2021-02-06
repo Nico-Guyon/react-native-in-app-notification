@@ -11,7 +11,7 @@ const styles = {
   },
   container: {
     position: 'absolute',
-    top: isIphoneX() && getStatusBarHeight(),
+    top: 0,
     bottom: 0,
     left: 0,
     right: 0,
@@ -66,9 +66,7 @@ class DefaultNotificationBody extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.isOpen !== prevProps.isOpen) {
-      StatusBar.setHidden(this.props.isOpen);
-    }
+    StatusBar.setHidden(true);
 
     if ((prevProps.vibrate || this.props.vibrate) && this.props.isOpen && !prevProps.isOpen) {
       Vibration.vibrate();

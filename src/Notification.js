@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Animated, StyleSheet, Image } from 'react-native';
-import { getStatusBarHeight, isIphoneX } from 'react-native-iphone-x-helper';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
 import DefaultNotificationBody from './DefaultNotificationBody';
 
@@ -16,7 +16,7 @@ class Notification extends Component {
   constructor() {
     super();
 
-    this.heightOffset = isIphoneX() ? getStatusBarHeight() : 0;
+    this.heightOffset = 0;
 
     this.show = this.show.bind(this);
     this.showNotification = this.showNotification.bind(this);
@@ -114,16 +114,19 @@ class Notification extends Component {
     const height = baseHeight + this.heightOffset;
 
     return (
-      <Animated.View
+      <SafeAreaInsetsContext.Consumer>
+      {
+        (inset) => {
+      return (<Animated.View
         style={[
           styles.notification,
-          { height, backgroundColor: backgroundColour },
+          { height: height+inset.top, backgroundColor: backgroundColour },
           {
             transform: [
               {
                 translateY: animatedValue.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [-height + topOffset, 0],
+                  outputRange: [-height-inset.top + topOffset, 0],
                 }),
               },
             ],
@@ -141,7 +144,10 @@ class Notification extends Component {
           onClose={() => this.setState({ isOpen: false }, this.closeNotification)}
           additionalProps={this.state.additionalProps}
         />
-      </Animated.View>
+      </Animated.View>);
+        }
+      }
+</SafeAreaInsetsContext.Consumer>
     );
   }
 }
